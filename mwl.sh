@@ -12,7 +12,7 @@ echo "
  "
 echo "----------------------------------------------------------------------"
 echo "      ---Author => < Mansour Abdullah
-      ---Review => < Muhammed Mujeeb
+      
       ---Version 1
       
       The main syntax : ./mwl.sh -f 'input file name' -o 'output file name' -m 'mode string' -p 'pattern string'
