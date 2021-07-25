@@ -185,45 +185,33 @@ test_if_the_input_file_exist_and_not_embty $input_file_name
 is_the_file_a_wordlist=true
 test_if_file_is_a_wordlist() {
 	
-	echo ""
-	echo "checking if the file is a wordlist..."
-	
 	while IFS= read -r line
 	do
 		string="${line//[$'\a\b\n\f\r\v']}"      
-		echo "The string now is $string"
 		word_in_progress=false
 		word_counter=0
 		for (( i = 0; i < ${#string}; i++ )) { \
-			echo "i is $i and letter now is ${string:i:1}"
 			additive_index=$((i+1))
 			if [[ ${string:i:1} = " " ]]  || [[ "${string:i:1}" =  "\t" ]] || [[ $((i+1)) -eq ${#string} ]] && [ $word_in_progress = "true" ]; then
 				word_counter=$((word_counter+1))
-				echo "word_counter is $word_counter"
 				word_in_progress=false
-			       	echo "here_1"
 				continue
 			elif [[ ${string:i:1} =  " " ]] || [[ ${string:i:1} =  "\t" ]] && [ $word_in_progress = "false" ]; then
-				echo "here_2"
+				echo " "
 				#continue
 			else
-				echo "here_3"
 				if [[ $((i+1)) -eq ${#string} ]]; then
 					word_counter=$((word_counter+1))
-					echo "word_counter is $word_counter"
 					word_in_progress=false
-					echo "here_4"
 				fi
 				word_in_progress=true
 			fi
 		}		
 		if [[ $word_counter -gt 1 ]]; then
 			if [ $mode_string = "convert" ]; then
-				echo "here_4"
 				is_the_file_a_wordlist=false
 				break
 			else 
-				echo "here_5"
 				is_the_file_a_wordlist=false
 				echo "Error: the $1 is a not a wordlist, and the program can not proceed"
 				echo "Warning: the file is considered as non wordlist due to the existence of spaces or tabs within the lines"
@@ -232,29 +220,13 @@ test_if_file_is_a_wordlist() {
 				exit 1
 			fi
 		fi
-	done < $1
+	done < "$1"
 }
 
 test_if_file_is_a_wordlist $input_file_name
 
-#create restore file of output_file then restore if new result is empty
-:'echo "restore file here"
-restore_filename="resotrefile"
-counter=0
-while true; do
-	if [ -f $restore_filename ]; then
-		restore_filename="$restore_file$counter"
-		counter=$((counter+1))
-	else
-		cp $output_file $restore_filename
-		break;	
-	fi
-	echo "restore file loop $counter"
-done
-exit 1'
-
 #clear stdin brfore reading
-function clear_stdin() {				#by Илья Антипов
+function clear_stdin() {				
     old_tty_settings=`stty -g`
     stty -icanon min 0 time 0
 
@@ -515,16 +487,12 @@ if [ $remove_stat = "true" ]; then
 	first_pattern_arr=()
 	for (( i=0 ; i < ${#pattern_string} ; i++ )) {
 		if [[ "${pattern_string:i:1}" != "," ]]; then
-			#echo "${pattern_string:i:1} is not a comma"
 			input_set+=${pattern_string:i:1}
 			next_index=$((i+1))
 			if [ "$next_index" -lt "${#pattern_string}" ]; then
-				#echo "The next index value is${pattern_string:next_index:1} on $next_index and less than ${#pattern_string}"
 				if [ "${pattern_string:next_index:1}" != "," ]; then
-					echo "continue_2"
         				continue
 				else 
-					echo "continue_3"
 					if [ "$input_set" != "" ]; then
 						echo $input_set
 						first_pattern_arr[$counter]=$input_set
@@ -539,18 +507,14 @@ if [ $remove_stat = "true" ]; then
 				echo ""
 			fi
 		else 
-			#echo "${pattern_string:i:1} is for continue_1"
 			continue
 		fi
 	}
 	
 	#test if the input is nubmer if remove is by index/ size
 	if [ "$remove_stat_number" = "true" ]; then
-		echo "${first_pattern_arr[@]}"
 		for (( i=0 ; i < ${#first_pattern_arr[@]} ; i++ )) {
-			echo "element is ${first_pattern_arr[$i]}"
-			if ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+$ ]]; then        #=~ ^-?[0-9]+$
-				echo "first_pattern_arr is ${first_pattern_arr[$i]}"
+			if ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+$ ]]; then        
 				echo "Error: your input pattern is in a wrong format, and the program can not be proceed"
 				exit 1
 			fi
@@ -559,14 +523,10 @@ if [ $remove_stat = "true" ]; then
 	
 	#validate range_string if remove_stat_byline is true
 	if [ "$remove_stat_byline" = "true" ]; then
-		echo "first_pattern_arr is ${first_pattern_arr[@]}"
-		echo "first_pattern_arr size is ${#first_pattern_arr[@]}"
 		lines_arr=()
 		lines_arr_counter=0
 		for (( i=0 ; i < ${#first_pattern_arr[@]} ; i++ )) {
-			echo "element is ${first_pattern_arr[$i]}"
-			if ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+-[0-9]+$ ]] && ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+$ ]]; then        #=~ ^-?[0-9]+$
-				echo "first_pattern_arr is ${first_pattern_arr[$i]}"
+			if ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+-[0-9]+$ ]] && ! [[ ${first_pattern_arr[$i]} =~ ^[0-9]+$ ]]; then        
 				echo "Error: your input pattern is in a wrong format, and the program can not be proceed"
 				exit 1
 			elif [[ ${first_pattern_arr[$i]} =~ ^[0-9]+$ ]]; then
@@ -574,7 +534,6 @@ if [ $remove_stat = "true" ]; then
 				lines_arr_counter=$((lines_arr_counter+1))
 			elif [[ ${first_pattern_arr[$i]} =~ ^[0-9]+-[0-9]+$ ]]; then
 				#convert range to a set of numbers
-				echo "convert element is ${first_pattern_arr[$i]}"
 				range_string=${first_pattern_arr[$i]}
 				dash_passed=false
 				first_number=""
@@ -591,32 +550,22 @@ if [ $remove_stat = "true" ]; then
 					fi
 				}
 				if [ $first_number -gt $last_number ]; then
-					echo "first greater"
 					for (( z=$last_number; z <= $first_number; z++ )) {
 						line_arr[$lines_arr_counter]=$z;
 						lines_arr_counter=$((lines_arr_counter+1))
 					}
 				elif [ $first_number -lt $last_number ]; then
-					echo "second greater"
 					for (( z=$first_number; z <= $last_number; z++ )) {
 						line_arr[$lines_arr_counter]=$z;
 						lines_arr_counter=$((lines_arr_counter+1))
 					}
 				elif [ $first_number -eq $last_number ]; then
-					echo "equal"
 					line_arr[$lines_arr_counter]=$first_number;
 					lines_arr_counter=$((lines_arr_counter+1))
 				fi
-				#echo "first_number is $first_number"
-				#echo "last_number is $last_number"
-				echo "line_arr is ${line_arr[@]}"
-				echo "line_arr size is ${#line_arr[@]}"
 			fi
 		}
 	fi
-	
-	echo "The first_pattern_arr is ${first_pattern_arr[@]}"
-	echo "The first_pattern_arr size is ${#first_pattern_arr[@]}"
 fi
 
 #deal with pattern string validity if replace_insert is true
@@ -630,39 +579,29 @@ if [ $replace_insert = "true" ]; then
 	second_input_arr=()
 	replace_all_input_pattarn_by_one_letter=false
 	for (( i=0 ; i < ${#pattern_string} ; i++ )) {
-		#printf "The letter now is %s \n" "${pattern_string:i:1}";
 		if [ $passed_replace_sign = "false" ]; then
 			if [ "${pattern_string:i:1}" = ":" ] && [ ${pattern_string:$((i+1)):1} = ">" ]; then
-				#if < in first char, or nothing after it
 				if [ $i = 0 ]; then
-					#echo "here_1"
 					echo "Error: your input pattern misses the left hand side, and the program can not proceed";
 					exit 1
 				elif  [ "$(($i+2))" = ${#pattern_string} ]; then
 					echo "Error: your input pattern misses the right hand side, and the program can not proceed";
 					exit 1
 				else
-					#echo "here_2"
 					passed_replace_sign=true
 				fi
-				#increment by 2, : and > letters, in case 2 sign of :> inputed together, first one will be used only
 				i=$((i+2))
 			fi
 		fi
 		if [ $passed_replace_sign = "false" ]; then
 			if [[ "${pattern_string:i:1}" != "," ]]; then
-				#echo "${pattern_string:i:1} is not a comma"
 				input_set+=${pattern_string:i:1}
 				next_index=$((i+1))
 				if [ "$next_index" -lt "${#pattern_string}" ]; then
-					#echo "The next index value is${pattern_string:next_index:1} on $next_index and less than ${#pattern_string}"
 					if [[ "${pattern_string:next_index:1}" != "," ]] &&  [[ "${pattern_string:next_index:1}" != ":" ]]; then
-						#echo "continue_2"
 						continue
 					else 
-						#echo "continue_3"
 						if [ "$input_set" != "" ]; then
-							#echo $input_set
 							first_pattern_arr[$pre_counter]=$input_set
 							pre_counter=$((pre_counter+1))
 							input_set=""
@@ -671,19 +610,15 @@ if [ $replace_insert = "true" ]; then
 					fi
 				else
 					echo ""
-					#echo "replace_sign_didnot passed and the string ends here!"
 				fi
 			else 
-				#echo "${pattern_string:i:1} is for continue_1"
 				continue
 			fi
 		else
 			if [[ "${pattern_string:i:1}" != "," ]]; then
-				#echo "${pattern_string:i:1} is not a comma"
 				input_set+=${pattern_string:i:1}
 				next_index=$((i+1))
 				if [ "$next_index" -lt "${#pattern_string}" ]; then
-					#echo "The next index value is${pattern_string:next_index:1} on $next_index and less than ${#pattern_string}"
 					if [[ "${pattern_string:next_index:1}" != "," ]] &&  [[ "${pattern_string:next_index:1}" != ":" ]]; then
 						echo "continue_2"
 						continue
@@ -701,10 +636,8 @@ if [ $replace_insert = "true" ]; then
 					second_input_arr[$post_counter]=$input_set
 					post_counter=$((post_counter+1))
 					echo ""
-					#echo "replace_sign_didnot passed and the string ends here!"
 				fi
 			else 
-				#echo "${pattern_string:i:1} is for continue_1"
 				continue
 			fi
 		fi	
@@ -712,9 +645,7 @@ if [ $replace_insert = "true" ]; then
 	
 	#test if the input is nubmer if replace is by index/ size
 	if [ $replace_insert_number = "true" ]; then
-		echo "${first_pattern_arr[@]}"
 		for (( i=0 ; i < ${#first_pattern_arr[@]} ; i++ )) {
-			echo "element is ${first_pattern_arr[$i]}"
 			if ! [[ "${first_pattern_arr[$i]}" =~ ^[0-9]+$ ]]; then
 				echo "Error: your input contains non numerical value at the left side(before :>), and the program can not proceed"
 				exit 1
@@ -736,11 +667,8 @@ if [ $replace_insert = "true" ]; then
 	else 
 		replace_all_input_pattarn_by_one_letter=true
 	fi
-	echo "The last pre array is ${first_pattern_arr[@]}"
-	echo "The last post array is ${second_input_arr[@]}"
 fi
 #exit 1
-echo "here_1"
 
 #deal with pattern string validity if upper_lower_as is true
 if [ $upper_lower_as = "true" ]; then
@@ -766,39 +694,22 @@ fi
 if  [ "$prefix_postfix" = "false" ] && [ $upper_lower = "false" ] && [ $special_function = "false" ] && [ $encode_decode = "false" ] \
 				    && [ $statistics_mode = "false" ] && [ $hash_mode = "false" ]; then 
 	second_pattern_arr=()
-	#echo $second_pattern_arr
 	for (( i=0 ; i < ${#first_pattern_arr[@]} ; i++ )) {
-		#echo "loop"
 		if [ ${#second_pattern_arr[@]} -eq 0 ]; then 
         		second_pattern_arr[$i]=${first_pattern_arr[0]};
-        		#echo "first block, second patten array now are !"
-			printf "second array now is %s \n" "${second_pattern_arr[@]}"
-			printf "second array size now is %s \n" ${#second_pattern_arr[@]} 
-			echo "here_1"
         	else 
         		letter_is_exist="No";
-        		#printf "letter_is_exist is %s" $letter_is_exist
         		for (( j=0 ; j < ${#second_pattern_arr[@]} ; j++ )) {
-				#printf "i is %s, j is %s \n" "${first_pattern_arr[$i]}" "${second_pattern_arr[$j]}";
 		 		if [ "${first_pattern_arr[$i]}" = "${second_pattern_arr[$j]}" ]; then 
 		 			letter_is_exist="Yes"
-		 			printf "letter_is_exist is %s" $letter_is_exist
-        				#echo "Letter is exist in the second list!"
-        				echo "here_2"
         				break;
         			fi
 			}
 			if [ $letter_is_exist = "No" ]; then 
         			second_pattern_arr[${#second_pattern_arr[@]}]=${first_pattern_arr[$i]};
-        			printf "second array now is %s \n" "${second_pattern_arr[@]}"
-				printf "second array size now is %s \n" ${#second_pattern_arr[@]} 
-				echo "here_3"
         		fi
         	fi
         }
-	echo "After pattern repetition processing:"
-	printf "second_pattern_array is %s \n" "${second_pattern_arr[@]}"
-	printf "second pattern size is: %s \n" "${#second_pattern_arr[@]}" 
 fi
 
 #check the equality of left, to right side of pattern string(after repetition removal process) if replace_insert is true
@@ -820,13 +731,6 @@ if [ $replace_insert = "true" ]; then
 	fi
 fi
 
-#exit 1
-
-echo ------------------------------------------------------------------------------------------------------------------------------------------------------------
-echo ------------------------------------------------------------------------------------------------------------------------------------------------------------
-echo ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 #disable keyboard input and do animation, uses stty
 stty -echo
 chars="/-\|"
@@ -838,7 +742,6 @@ while [[ $c < 20 ]]; do
   done
   ((c++))
 done
-#enable keyboard input again
 stty echo
 
 #if mode_string is convert
@@ -852,24 +755,15 @@ if [ $mode_string = "convert" ]; then
 	
 	test_counter=0
 	while IFS= read -r line; do
-		#echo $line | od -c
-		string="${line//[$'\a\b\n\f\r\v']}"      #\t and apace makes a problem
-		echo "line is $line and string is $string"
-		#echo $string | od -c
+		string="${line//[$'\a\b\n\f\r\v']}"      
 		new_string=""
 		insertion_state=false
 		for (( i = 0; i < ${#string}; i++ )) { 
 			additive_index=$((i+1))
-			#echo "i is $i at ${string:i:1}"
 			if [ "${string:i:1}" !=  " " ] && [ "${string:i:1}" != "\t" ]; then
-				echo "not a space"
-				#insertion_state=true
 				new_string+=${string:i:1}
-				#echo "i is $i and additive_index is $additive_index and "
 				if [ $additive_index = ${#string} ] || [ "${string:additive_index:1}" = " " ] || [ "${string:additive_index:1}" = "\t" ]; then
-					echo "inner_new_string is $new_string and inserted"
 					echo "$new_string" >> $output_file
-					#insertion_state=false
 					new_string=""
 				fi
 			else 
@@ -912,7 +806,6 @@ combine_function() {				#requires md5sum
 
 #deal with combine mode
 if [ "$mode_string" = "combine"   ]; then    			
-    		echo "Strings are combine"
     		combine_function
     		echo "Inform: the files are combined successfully"
     		exit 1
@@ -920,8 +813,6 @@ fi
 
 #deal with the mode statistics
 if [ "$mode_string" = "statistics"   ]; then 
-   	#test_if_file_is_a_wordlist $1
-	
 	#show number of lines, number of words by size, repetition number of words, stat command, required processing time
 	line_counter=0
 	embty_line_counter=0
@@ -931,16 +822,11 @@ if [ "$mode_string" = "statistics"   ]; then
 		line_n="${line//[$' \a\b\n\f\r\t\v']}"
 		if [[ $line_n != "" ]]; then
 			file_words_arr[$line_counter]=$line_n
-			#echo "The array now is ${file_words_arr[$line_counter]}"
 			line_counter=$((line_counter+1))
 		else
 			embty_line_counter=$((embty_line_counter+1))
 		fi
 	done < "$input_file_name"
-	
-	#echo "The array now is ${file_words_arr[@]}"
-	echo "The array size now is ${#file_words_arr[@]}"
-	echo "line_counter is $line_counter"
     	
     	#create two lists one is for repeated words, another is for repeated counters per word
     	repeat_counter=0
@@ -975,8 +861,6 @@ if [ "$mode_string" = "statistics"   ]; then
 			fi
 		fi
 	}
-    	#echo "repeated_words_arr  is ${repeated_words_arr[@]}"
-    	#echo "repeated_words_counters  is ${repeated_words_counters[@]}"
     	echo ""
     	echo "file information:"
     	echo "- - - - - - - - - - - - - - - - - - - - - - - - - - "
@@ -1000,37 +884,24 @@ fi
 #start processing
 line_number=0
 while IFS= read -r line; do
-	
-	echo "line is $line"
 	#line number counter
 	((line_number++))
-	echo "line_number is $line_number"
 	
 	#convert each line to array of chars to process replace* modes
 	line_n="${line//[$' \a\b\n\f\r\t\v']}"
-	echo "line_n is $line_n"
 	if [ $mode_string = "insert_byindexA" ] || [ "$mode_string" = "insert_byindexB" ] || [ "$mode_string" = "insert_byA"   ] \
 						|| [ "$mode_string" = "insert_byB"   ]; then
 		word_arr=()
-		#echo $word_size; echo $line
 		for (( i=0 ; i < ${#line_n} ; i++ )) {
-			#echo "${line_n:i:1}"
     			word_arr[$i]=${line_n:i:1}
-    			#echo "${word_arr[$i]}"
-    			#echo "here"
 		}
-		#printf "word array is :%s \n" "${word_arr[@]}" 
-		echo "size of word_arr is  ${#word_arr[@]}"                #size of array
 	fi
 	
 	#process according the provided mode, then compare word string to pattern array, if exist apply the action(remove.. and so on)
 	if [ "$mode_string" = "remove_all" ]; then 
-    		echo "String is remove_all."
     		contains_unacceptable_letter=false
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ )) {
-    			printf "i is %s \n" "${second_pattern_arr[$i]}"
     				if [[ "$line_n" ==  *"${second_pattern_arr[$i]}"*  ]]; then
-    					echo "contains unaccepted"
     					contains_unacceptable_letter=true
     					break;
     				fi
@@ -1038,30 +909,20 @@ while IFS= read -r line; do
     		if [ $contains_unacceptable_letter = "false" ]; then
     			echo "$line_n" >> $output_file
     		fi
-	elif [ "$mode_string" = "remove_part"   ]; then    #problem if many patterns exist, first one will be used only(break)
-    		echo "String is remove_part"
+	elif [ "$mode_string" = "remove_part"   ]; then    
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ )) {
-    			printf "i is %s \n" "${second_pattern_arr[$i]}"
     				if [[ "$line_n" ==  *"${second_pattern_arr[$i]}"*  ]]; then
-    					echo "contains unaccepted"
     					line_n=${line_n//${second_pattern_arr[$i]}}
     					line_n=${line_n//[$'\a\b\n\f\r\t\v']}
     				fi
     		}
-    		#echo $line_n | od -c
     	        if [ $line_n != " " ]; then
     	        	echo "$line_n" >> $output_file
     	        fi
     	elif [ "$mode_string" = "remove_bysize"   ]; then   #requires to tr
-    		echo "Strings are remove_bysize "
-    		#echo "$line_n" | od -c
-    		#line_n=$(echo "$line_n" | tr -dc '[:print:]')
-    		#echo "line_n is $line_n"
     		match_unacceptable_size=false;
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ ))  {
-    			echo "The line_n size is ${#line_n}"
     			if [ ${#line_n} = ${second_pattern_arr[$i]} ]; then
-    				echo "Match the unacceptable size!"
     				match_unacceptable_size=true;
     				break
     			fi	
@@ -1070,14 +931,9 @@ while IFS= read -r line; do
     			echo "$line_n" >> $output_file;
     		fi
     	elif [ "$mode_string" = "remove_byline"   ]; then   
-    		echo "String is remove_byline"
     		match_unacceptable_line=false;
-    		echo "The line_n size is ${#line_n}"
     		for (( i=0 ; i < ${#line_arr[@]} ; i++ ))  {
-    			echo "The line_arr element is ${line_arr[$i]} at $i"
     			if [ $line_number = ${line_arr[$i]} ]; then
-    				echo "line_number is $line_number"
-    				echo "Match the unacceptable line number!"
     				match_unacceptable_line=true
     				break
     			fi	
@@ -1086,19 +942,14 @@ while IFS= read -r line; do
     			echo "$line_n" >> $output_file;
     		fi
     	elif [ $mode_string = "remove_byindex" ]; then 
-    		echo "Strings are remove_byindex"
     		new_string=$line_n
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ )) {
-    			#printf "i is %s \n" "${second_pattern_arr[$i]}"
     			new_string=${new_string/${new_string:${second_pattern_arr[$i]}:1}}
-    			echo "The index now is ${second_pattern_arr[$i]} at $i and  new_line is $new_string"
     		}
     		echo "$new_string" >> $output_file;
     	elif [ "$mode_string" = "replace_by"   ]; then 
-    		echo "Strings are replace_by"
     		new_arr_after_replace=""
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ )) {
-    			echo "The second_pattern_arr element now is: ${second_pattern_arr[$i]} at $i"
     			if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
     				new_arr_after_replace=${line_n//${second_pattern_arr[$i]}/${second_input_arr[0]}}
     				if [ $line_n != $new_arr_after_replace ]; then
@@ -1111,17 +962,11 @@ while IFS= read -r line; do
     				fi
     			fi
     		}
-    		printf "The new word after replace is %s \n" "$new_arr_after_replace"
     		echo "$new_arr_after_replace" >> $output_file;
     	elif [ "$mode_string" = "replace_bysize"   ]; then 
-    		echo "Strings are replace_bysize "
-    		#echo "$line" | od -c
     		line_n="${line//[$'\a\b\n\f\r\t\v']}"
-    		#line_n=$(echo "$line" | tr -dc '[:print:]')
-    		#echo "line_n is $line_n"
     		data_inserted=false
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ ))  {
-    			echo "The line size is ${#line_n}"
     			if [ "${#line_n}" = "${second_pattern_arr[$i]}" ]; then
     				if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
     					echo "${second_input_arr[0]}" >> $output_file
@@ -1137,11 +982,8 @@ while IFS= read -r line; do
     		if [ $data_inserted = "false" ]; then
     			echo "$line" >> $output_file;
     		fi
-    	elif [ "$mode_string" = "replace_byindex" ]; then	#should not allow more than one index if right side is one also, if multiple values inputted then 									#the file size will be doubles
-    		echo "Strings are string replace_byindex"
-    		#echo "$line" | od -c
+    	elif [ "$mode_string" = "replace_byindex" ]; then	
     		line_n="${line//[$'\a\b\n\f\r\t\v']}"
-    		#line_n=$(echo "$line" | tr -dc '[:print:]')
     		new_line=""
     		for (( i=0 ; i < ${#second_pattern_arr[@]} ; i++ ))  {
     			if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
@@ -1150,10 +992,6 @@ while IFS= read -r line; do
     				first_index=$((${second_pattern_arr[$i]}))
     				second_index=$((${second_pattern_arr[$i]}+${#second_input_arr[0]}))
     				new_line="${line:0:$first_index}${second_input_arr[0]}${line:$second_index}"
-    				echo "The line is $line"
-    				echo "The new_line is $new_line"
-    				echo "The first_index is $first_index and current second_pattern_arr is ${second_pattern_arr[$i]}"
-    				echo "The second_index is $second_index"
     				echo "$new_line" >> $output_file
     				break;
     			else
@@ -1162,24 +1000,16 @@ while IFS= read -r line; do
     				first_index=$((${second_pattern_arr[$i]}))
     				second_index=$((${second_pattern_arr[$i]}+${#second_input_arr[$i]}))
     				new_line="${line:0:$first_index}${second_input_arr[$i]}${line:$second_index}"
-    				echo "The line is $line"
-    				echo "The new_line is $new_line"
-    				echo "The first_index is $first_index and current second_pattern_arr is ${second_pattern_arr[$i]}"
-    				echo "The second_index is $second_index"
     				echo "$new_line" >> $output_file
     			fi
     		}
     	elif [ "$mode_string" = "insert_byA"   ]; then 
-    		echo "String is insert_byA"
     		string_after_insertion=""
 		for (( i=0 ; i < ${#word_arr[@]} ; i++ )) {
 			is_inserted=false
 			for (( j=0 ; j < ${#second_pattern_arr[@]} ; j++ )) {
 				string=${second_pattern_arr[$j]}
-				#echo "string is $string"
 				if [ ${#string} = 1 ]; then
-					echo "i is ${word_arr[$i]} at $i and j is ${second_pattern_arr[$j]} at $j"
-					echo "string length is 1"
 					if [ ${word_arr[$i]} = ${second_pattern_arr[$j]} ]; then
 						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
 							string_after_insertion+=${word_arr[$i]}
@@ -1194,14 +1024,10 @@ while IFS= read -r line; do
 						fi
 					fi
 				else
-				        echo "string length is not  1"
 					letter_equal=false
 					new_i_index=$i
-					#test if upper index of word_arr equals to string(second pattern array element)
 					for (( z=0 ; z < ${#string} ; z++ )) {
-						echo "i is ${word_arr[$new_i_index]} at $new_i_index and z is ${second_pattern_arr:z:1} at $z"
 						if [[ ${word_arr[$new_i_index]} = ${string:z:1} ]] && [[ $new_i_index < ${#word_arr[@]} ]]; then
-						        echo "is equals"
 							letter_equal=true
 							new_i_index=$((new_i_index+1))
 						else
@@ -1210,7 +1036,6 @@ while IFS= read -r line; do
 						fi	
 					}
 					if [ $letter_equal = "true" ]; then
-						echo "substring is equals"
 						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
 							string_after_insertion+=$string 
 							string_after_insertion+=${second_input_arr[0]}
@@ -1233,16 +1058,12 @@ while IFS= read -r line; do
 		}
 		echo "$string_after_insertion" >> $output_file;
     	elif [ "$mode_string" = "insert_byB"   ]; then 
-    		echo "Strings are insert_byB"
     		string_after_insertion=""
 		for (( i=0 ; i < ${#word_arr[@]} ; i++ )) {
 			is_inserted=false
 			for (( j=0 ; j < ${#second_pattern_arr[@]} ; j++ )) {
 				string=${second_pattern_arr[$j]}
-				#echo "string is $string"
 				if [ ${#string} = 1 ]; then
-					echo "i is ${word_arr[$i]} at $i and j is ${second_pattern_arr[$j]} at $j"
-					echo "string length is 1"
 					if [ ${word_arr[$i]} = ${second_pattern_arr[$j]} ]; then
 						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
 							string_after_insertion+=${second_input_arr[0]}
@@ -1257,14 +1078,10 @@ while IFS= read -r line; do
 						fi
 					fi
 				else
-				        echo "string length is not  1"
 					letter_equal=false
 					new_i_index=$i
-					#test if upper index of word_arr equals to string(second pattern array element)
 					for (( z=0 ; z < ${#string} ; z++ )) {
-						echo "i is ${word_arr[$new_i_index]} at $new_i_index and z is ${second_pattern_arr:z:1} at $z"
 						if [[ ${word_arr[$new_i_index]} = ${string:z:1} ]] && [[ $new_i_index < ${#word_arr[@]} ]]; then
-						        echo "is equals"
 							letter_equal=true
 							new_i_index=$((new_i_index+1))
 						else
@@ -1273,7 +1090,6 @@ while IFS= read -r line; do
 						fi	
 					}
 					if [ $letter_equal = "true" ]; then
-						echo "substring is equals"
 						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
 							string_after_insertion+=${second_input_arr[0]}
 							string_after_insertion+=$string 
@@ -1297,19 +1113,14 @@ while IFS= read -r line; do
 		echo "$string_after_insertion" >> $output_file;
     	
     	elif [ "$mode_string" = "insert_byindexA"   ]; then 
-    		echo "mode_string is insert_byindexA"
     		string_after_insertion=""
     		index_of_new_array=0
     		for (( i=0 ; i < ${#word_arr[@]} ; i++ )) {
     			is_inserted=false
     			for (( j=0 ; j < ${#second_pattern_arr[@]} ; j++ )) {
-    				#printf "i is ${word_arr[$i]} at $i and j is ${#second_pattern_arr[$j]} at $j"
     				if [ $i = ${second_pattern_arr[$j]} ]; then
-    					echo "i is ${word_arr[$i]} at $i and j is ${second_pattern_arr[$j]} at $j  and equals"
     					if [[ ${second_pattern_arr[$j]} -lt ${#word_arr[@]} ]]; then
-    						echo " second_pattern_arr[$j] is ${second_pattern_arr[$j]} and word_arr size is ${#word_arr[@]}!"
     						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
-    							#insert current letter at $i and add the string after it
     							string_after_insertion+=${word_arr[$i]} 
     							string_after_insertion+=${second_input_arr[0]}
     							is_inserted=true
@@ -1329,19 +1140,14 @@ while IFS= read -r line; do
 		}
 		echo "$string_after_insertion" >> $output_file;
     	elif [ "$mode_string" = "insert_byindexB"   ]; then 
-		echo "mode_string is insert_byindexB"
 		string_after_insertion=""
     		index_of_new_array=0
     		for (( i=0 ; i < ${#word_arr[@]} ; i++ )) {
     			is_inserted=false
     			for (( j=0 ; j < ${#second_pattern_arr[@]} ; j++ )) {
-    				#printf "i is ${word_arr[$i]} at $i and j is ${#second_pattern_arr[$j]} at $j"
     				if [ $i = ${second_pattern_arr[$j]} ]; then
-    					echo "i is ${word_arr[$i]} at $i and j is ${second_pattern_arr[$j]} at $j  and equals"
     					if [ ${second_pattern_arr[$j]} -lt ${#word_arr[@]} ] && [ $i != 0 ]; then
-    						echo " second_pattern_arr[$j] is ${second_pattern_arr[$j]} and word_arr size is ${#word_arr[@]}!"
     						if [ $replace_all_input_pattarn_by_one_letter = "true" ]; then
-    							#insert current letter at $i and add the string after it
     							string_after_insertion+=${second_input_arr[0]}
     							string_after_insertion+=${word_arr[$i]} 
     							is_inserted=true
@@ -1361,38 +1167,24 @@ while IFS= read -r line; do
 		}
 		echo "$string_after_insertion" >> $output_file;
     	elif [ "$mode_string" = "prefix"   ]; then 
-    		echo "Strings is prefix"
     		prefix_string=$pattern_string
     		prefix_string+=$line_n
-    		echo "The result prefix string is $prefix_string";
     		echo "$prefix_string" >> $output_file;
-    	elif [ "$mode_string" = "postfix"   ]; then    #gives wrong output, maybe a bug in the software
-    		echo "Strings are postfix"
+    	elif [ "$mode_string" = "postfix"   ]; then    
     		postfix_string=$line_n
-    		echo "line is $postfix_string"
     		postfix_string+=$pattern_string
-    		echo "after insertion is $postfix_string"
     		echo "$postfix_string" >> $output_file;
-    	elif [ "$mode_string" = "upper"   ]; then    				#requires tr
-    		echo "Strings are upper"
+    	elif [ "$mode_string" = "upper"   ]; then    				
     		echo "$line_n" | tr '[:lower:]' '[:upper:]' >> $output_file;
-    	elif [ "$mode_string" = "lower"   ]; then    				#requires tr
-    		echo "Strings are upper"
+    	elif [ "$mode_string" = "lower"   ]; then    				
     		echo "$line_n" | tr '[:upper:]' '[:lower:]' >> $output_file;
-    	elif [ "$mode_string" = "upper_as"   ]; then    			#requires tr
-    		echo "Strings are upper_as"
+    	elif [ "$mode_string" = "upper_as"   ]; then    			
     		upper_value=$(echo $pattern_string | tr '[:lower:]' '[:upper:]')
-    		echo "pattern_string is $pattern_string"
-    		echo "upper_value is $upper_value"
     		echo "$line_n" | tr "$pattern_string" "$upper_value" >> $output_file;
-    	elif [ "$mode_string" = "lower_as"   ]; then    			#requires tr
-    		echo "Strings are lower_as"
+    	elif [ "$mode_string" = "lower_as"   ]; then    			
     		lower_value=$(echo $pattern_string | tr '[:upper:]' '[:lower:]')
-    		echo "pattern_string is $pattern_string"
-    		echo "lower_value is $lower_value"
     		echo "$line_n" | tr "$pattern_string" "$lower_value" >> $output_file
     	elif [ "$mode_string" = "encode"   ]; then    								
-    		echo "String is encode"
     		string_after_encoding=""
     		for (( i = 0; i < ${#line_n}; i++ )) {
         		c="${line_n:i:1}"
@@ -1403,17 +1195,14 @@ while IFS= read -r line; do
     		}
 		echo "$string_after_encoding" >> $output_file
 	elif [ "$mode_string" = "decode"   ]; then    				
-    		echo "Strings are decode"
     		string_after_decoding=""
     		url_encoded="${line_n//+/ }"
     		string_after_decoding=$(printf '%b' "${url_encoded//%/\\x}")
     		echo "$string_after_decoding" >> $output_file
     		#echo $string_after_decoding | od -c
-    	elif [ "$mode_string" = "hash" ]; then    			#requires tr
-    		echo "Strings are hash"
+    	elif [ "$mode_string" = "hash" ]; then    			
     		hashed_string=""
-    		#echo "$line_n" | od -c
-    		if [ $pattern_string = "md5" ]; then                     #require md5sum, sha1sum, sha2sum, and awk
+    		if [ $pattern_string = "md5" ]; then                     
     			hashed_string=$(md5sum  <<< $line_n  | awk '{ print $1 }')
     		elif [ $pattern_string = "sha1" ]; then
     			hashed_string=$(shasum  <<< $line_n  | awk '{ print $1 }')
@@ -1422,9 +1211,6 @@ while IFS= read -r line; do
     		fi
     		echo "$hashed_string" >> $output_file
 	fi
-	#echo "after continue"
-	echo ""
-	#echo "$line"
 done < "$input_file_name"
 
 #check if output is embty then notify the user about it!
@@ -1432,12 +1218,3 @@ if [ ! -f "$output_file" ]; then
 	echo "Error: no data has been inserted into the output file, your condition finalizes to this results";
 	exit 1;
 fi
-
-#remove all input spaces of a wordlist
-#capture tr/ sha1sum/ echo error output when inputting -p "[:A-Z:]" -m lower_as
-#-p "nn,cl:>3,"33 works well
-
-
-#complete line by number, hashes gives different results from online tools, progress
-#version test on, participant, tools, restore(195), is /NNN unprinted letter?
-#unify the repetition in arrays in one method such as line_arr and statistics
