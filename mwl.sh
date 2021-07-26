@@ -105,10 +105,10 @@ print_version_info() {
 	echo "       Version Info:
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - 
   Version number:  1.1
-  Auther: 	 Mansour Abdullah
-  Developed on:	 bash, version 5.1.4(1)-release (x86_64-pc-linux-gnu)
-  Tested on:       
-  Included tools:  tr, md5sum, shasum, sha2sum, awk, echo, stty "
+  Auther: 	   Mansour Abdullah
+  Developed on:	   bash, version 5.1.4(1)-release (x86_64-pc-linux-gnu)
+  Tested on:       Ununtu 18.04.5 LTS  
+  Included tools:  tr, md5sum, shasum, sha2sum, awk, echo, stty"
 	exit 1
 }
 
@@ -465,7 +465,7 @@ else	#if pattern is provided and not required or equals to wrong value
 			fi
 	elif [ $mode_string = "encode" ] || [ $mode_string = "decode" ]; then
 			if [ $pattern_string != "url" ]; then
-				printf "Error: the only available encoding methods is url";
+				printf "Error: the only available encoding methods is url"
 				exit 1
 			fi
 	elif [ $mode_string = "convert" ]; then
@@ -494,7 +494,6 @@ if [ $remove_stat = "true" ]; then
         				continue
 				else 
 					if [ "$input_set" != "" ]; then
-						echo $input_set
 						first_pattern_arr[$counter]=$input_set
 						counter=$((counter+1))
 						input_set=""
@@ -625,7 +624,6 @@ if [ $replace_insert = "true" ]; then
 					else 
 						echo "continue_3"
 						if [ "$input_set" != "" ]; then
-							echo $input_set
 							second_input_arr[$post_counter]=$input_set
 							post_counter=$((post_counter+1))
 							input_set=""
@@ -715,13 +713,12 @@ fi
 #check the equality of left, to right side of pattern string(after repetition removal process) if replace_insert is true
 if [ $replace_insert = "true" ]; then
 	pre_counter=${#second_pattern_arr[@]}
-	echo "Inform: number of left side set is $pre_counter, and number of right side set is $post_counter"  #verbose
+	echo "Inform: number of left side set is $pre_counter, and number of right side set is $post_counter"  
 	if [ "$pre_counter" = "0" ] || [ "$post_counter" = "0" ] ; then
 		echo "Error: your input pattern misses the left side or the right side set";
 		exit 1
 	elif [ "$post_counter" != 1 ]; then
 		if [ "$post_counter" != "$pre_counter" ]; then
-			#echo "here_3"
 			echo "Error: the left side set of a pattern string should meet the set number of right side set";
 			echo "Inform: the program apply repetition removal on a pattern string, which causes removing some elements from the string";
 			exit 1
@@ -730,6 +727,10 @@ if [ $replace_insert = "true" ]; then
 		replace_all_input_pattarn_by_one_letter=true
 	fi
 fi
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #disable keyboard input and do animation, uses stty
 stty -echo
@@ -837,7 +838,7 @@ if [ "$mode_string" = "statistics"   ]; then
     	for (( i=0 ; i < ${#file_words_arr[@]} ; i++ )) {
     		repeat_counter=1
 		for (( j=$((i+1)) ; j < ${#file_words_arr[@]} ; j++ )) {
-			if [[ ${file_words_arr[$i]} = ${file_words_arr[$j]} ]]; then
+			if [[ "${file_words_arr[$i]}" == "${file_words_arr[$j]}" ]]; then
 				repeat_counter=$((repeat_counter+1))
 			fi
 		}
@@ -849,11 +850,11 @@ if [ "$mode_string" = "statistics"   ]; then
 			else
 				is_word_inserted=false
 				for (( z=0 ; z < ${#repeated_words_arr[@]} ; z++ )) {
-					if [ ${file_words_arr[$i]} = ${repeated_words_arr[$z]} ]; then
+					if [[ "${file_words_arr[$i]}" == "${repeated_words_arr[$z]}" ]]; then
 						is_word_inserted=true
 					fi
 				}
-				if [ $is_word_inserted = "false" ]; then
+				if [[ "$is_word_inserted" == "false" ]]; then
 					repeated_words_arr[$counter]=${file_words_arr[$i]}
 					repeated_words_counters[$counter]=$repeat_counter
 					counter=$((counter+1))
@@ -1199,7 +1200,6 @@ while IFS= read -r line; do
     		url_encoded="${line_n//+/ }"
     		string_after_decoding=$(printf '%b' "${url_encoded//%/\\x}")
     		echo "$string_after_decoding" >> $output_file
-    		#echo $string_after_decoding | od -c
     	elif [ "$mode_string" = "hash" ]; then    			
     		hashed_string=""
     		if [ $pattern_string = "md5" ]; then                     
