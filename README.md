@@ -1,4 +1,4 @@
-.صانعة قائمة الكلمات، اداه تعمل على أنظمة لينكس، تساعد على تعديل، إضافة او حذف المحتوى الموجود في ملف القائمة، توفر اكثر من ٢٠ وظيفة لمساعد مختبرين الاختراق او أي مستخدم لتحقيق اهدافة 
+.صانعة قائمة الكلمات، اداة تعمل على أنظمة لينكس، تساعد على تعديل، و إضافة او حذف المحتوى الموجود في ملف القائمة، توفر اكثر من ٢٠ وظيفة لمساعدة مختبرين الاختراق او أي مستخدم لتحقيق اهدافة 
 
 The script is used to help pentesters to orgnize and identify the wordlist content. It helps the users with more than 20 functionality such as removing, inserting, and replacing the content. I find the difficulty in finding a bash tool to create and control a targeted wordlist. I found some solutions in embeded tools such as burpsuite, but we like to deal with the terminal as a linux pros. It was so difficult to write this code, the code length exceeded 1000 lines reflecting the difficulty of mixing between the program effectiveness, and the users experience. This tool still needs to community help to imporove its functionalty.
 
