@@ -619,10 +619,10 @@ if [ $replace_insert = "true" ]; then
 				next_index=$((i+1))
 				if [ "$next_index" -lt "${#pattern_string}" ]; then
 					if [[ "${pattern_string:next_index:1}" != "," ]] &&  [[ "${pattern_string:next_index:1}" != ":" ]]; then
-						echo "continue_2"
+						#echo "continue_2"
 						continue
 					else 
-						echo "continue_3"
+						#echo "continue_3"
 						if [ "$input_set" != "" ]; then
 							second_input_arr[$post_counter]=$input_set
 							post_counter=$((post_counter+1))
