@@ -46,7 +46,7 @@ help_instrutions()
    
    \t-h 	  help
    
-  #\t-v	  verbose, only one verbose level is used
+  #\t-v	  verbose, only one verbose level is used(not supported yet)
    
    \t-i   	  show version info
    
