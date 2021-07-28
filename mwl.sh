@@ -150,7 +150,7 @@ for (( i=1; i<=$#; i++ )) {
     	fi
 }
 
-echo "input_file_name is $input_file_name, output_file is $output_file, mode_string is $mode_string, and pattern_string is $patteren_string"
+#echo "input_file_name is $input_file_name, output_file is $output_file, mode_string is $mode_string, and pattern_string is $patteren_string"
 #notify the user about missed arguments
 if [ -z "$input_file_name" ]; then 
 	echo "Error: input file name or file path should be given"; 
