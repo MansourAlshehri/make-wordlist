@@ -46,8 +46,6 @@ help_instrutions()
    
    \t-h 	  help
    
-  #\t-v	  verbose, only one verbose level is used(not supported yet)
-   
    \t-i   	  show version info
    
    \t-d   	  add this script to PATH, for fast access
@@ -105,7 +103,7 @@ print_version_info() {
 	echo "       Version Info:
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - 
   Version number:  1.1
-  Auther: 	   Mansour Abdullah
+  Author: 	   Mansour Abdullah
   Developed on:	   bash, version 5.1.4(1)-release (x86_64-pc-linux-gnu)
   Tested on:       Ununtu 18.04.5 LTS  
   Included tools:  tr, md5sum, shasum, sha2sum, awk, echo, stty"
